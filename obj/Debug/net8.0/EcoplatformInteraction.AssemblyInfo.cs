@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EcoplatformInteraction")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bab6c72065255448d6983433a3d2c599c4968ac1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ae19e1527119617636b16a3cff6d7afb5e28a438")]
 [assembly: System.Reflection.AssemblyProductAttribute("EcoplatformInteraction")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EcoplatformInteraction")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

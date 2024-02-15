@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 using System.Xml;
 using System.Xml.Linq;
+using System.Reflection;
+using System.Globalization;
+using System.Diagnostics.Metrics;
 
 namespace EcoPlatformApiExample
 {
@@ -13,18 +16,7 @@ namespace EcoPlatformApiExample
     {
         static async Task Main(string[] args)
         {
-            //1. search materials:
-            /*var apiUrl = "https://data.eco-platform.org/resource/processes?search=true&" +
-                "distributed=true&" +
-                "virtual=true&" +
-                "name=Gobain";
-                //"owner=Saint-Gobain PAM";*/
-
-            //2. choose materials between results
-
-            //3. read from material's site reference
-            var apiUrl = "https://data.environdec.com/resource/processes/e7037d56-10e8-4c02-4566-08db71fe4796?version=07.00.015&format=xml";
-
+            // Retrieve Token
             string relativePath = @"..\..\..\token.txt";
             string fullPath = Path.GetFullPath(relativePath);
             string accessToken = "";
@@ -38,24 +30,37 @@ namespace EcoPlatformApiExample
             else
             {
                 Console.WriteLine($"Token file does not exist: {fullPath}");
+                return;
             }
+            //------------------
 
+            // Searching name
+            string prompting = "Type a name to search:";
+            Console.WriteLine(prompting);
+            string searchingName = Console.ReadLine();
+            //------------------
+
+            // Search in eco-platform
+            var apiUrl = "https://data.eco-platform.org/resource/processes?search=true&" +
+                "distributed=true&" +
+                "virtual=true&" +
+                $"name={searchingName}";
+            //"owner=Saint-Gobain PAM";*/
+
+            var searchedLinks = new List<string>();
+            var searchedNames = new List<string>();
             using (var httpClient = new HttpClient())
             {
-                // Set up the request header with your access token
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-
                 try
                 {
-                    // Make the GET request
+                    // GET request
                     HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
-
                     if (response.StatusCode == System.Net.HttpStatusCode.SeeOther)
                     {
                         var newUri = response.Headers.Location;
                         if (newUri != null)
                         {
-                            // Optionally, you might want to ensure the new URI is absolute before following it
                             response = await httpClient.GetAsync(newUri);
                             response.EnsureSuccessStatusCode();
                         }
@@ -66,21 +71,118 @@ namespace EcoPlatformApiExample
                     }
                     string responseBody = await response.Content.ReadAsStringAsync();
 
-                    if (response.Content.Headers.ContentType.ToString() == "application/zip")
-                    {
-                        string zipFilePath = @"C:\Users\Carlo\Downloads\file.zip";
-                        SaveZipFileFromHttpResponse(response, response.Content.Headers.ContentDisposition, zipFilePath);
-                    }
-                    if (response.Content.Headers.ContentType.ToString() == "application/pdf")
-                    {
-                        string zipFilePath = @"C:\Users\Carlo\Downloads\file.pdf";
-                        SavePdfFileFromHttpResponse(response, response.Content.Headers.ContentDisposition, zipFilePath);
-                    }
                     if (response.Content.Headers.ContentType.ToString() == "application/xml")
                     {
-                        string xmlFilePath = @"C:\Users\Carlo\Downloads\file.xml";
-                        SaveXmlFileFromHttpResponse(response, response.Content.Headers.ContentDisposition, xmlFilePath);
+                        XDocument doc = XDocument.Parse(responseBody);
+                        XNamespace nsSapi = "http://www.ilcd-network.org/ILCD/ServiceAPI";
+                        XNamespace nsP = "http://www.ilcd-network.org/ILCD/ServiceAPI/Process";
+                        XNamespace nsXlink = "http://www.w3.org/1999/xlink";
+                        var dataSetList = doc.Element(nsSapi + "dataSetList");
+                        if (dataSetList.Elements().Count() == 0)
+                        {
+                            Console.WriteLine("No results found.");
+                            return;
+                        }
 
+                        var processes = doc.Descendants(nsP + "process");
+
+                        foreach(var process in processes)
+                        {
+                            searchedLinks.Add(process.Attribute(nsXlink + "href").Value);
+                            searchedNames.Add(process.Element(nsSapi + "name").Value);
+                        }
+                    }
+                }
+                catch (HttpRequestException e)
+                {
+                    Console.WriteLine("\nException Caught!");
+                    Console.WriteLine("Message :{0} ", e.Message);
+                }
+            }
+            //------------------
+
+
+            // Make the choice from the found list
+            string chosenName;
+            string chosenLink = "";
+            bool matched = false;
+            Console.WriteLine();
+            Console.WriteLine("Choose from the following list:");
+            for(int i = 0; i < searchedNames.Count; i++)
+                Console.WriteLine($"{searchedNames[i]}"); //Console.WriteLine($"{i}: {searchedNames[i]}");
+            do
+            {
+                searchingName = Console.ReadLine();
+                for (int i = 0; i < searchedNames.Count(); i++)
+                {
+                    if (searchedNames[i] == searchingName)
+                    {
+                        chosenName = searchedNames[i];
+                        chosenLink = searchedLinks[i];
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched)
+                {
+                    Console.WriteLine("The written name is not matching the previous list. Please try again:");
+                    Console.WriteLine();
+                }
+            } while (!matched);
+            //------------------
+
+
+            //3. read from material's site reference
+            Console.WriteLine(); Console.WriteLine(); Console.WriteLine();
+            //apiUrl = "https://data.environdec.com/resource/processes/e7037d56-10e8-4c02-4566-08db71fe4796?version=07.00.015&format=xml";
+            apiUrl = chosenLink  + "&format=xml";
+
+            using (var httpClient = new HttpClient())
+            {
+                // Set up the request header with your access token
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+                try
+                {
+                    // GET request
+                    HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.SeeOther)
+                    {
+                        var newUri = response.Headers.Location;
+                        if (newUri != null)
+                        {
+                            response = await httpClient.GetAsync(newUri);
+                            response.EnsureSuccessStatusCode();
+                        }
+                    }
+                    else
+                    {
+                        response.EnsureSuccessStatusCode();
+                    }
+                    string responseBody = await response.Content.ReadAsStringAsync();
+
+                    //saving file to downloads
+                    if(false)
+                    {
+                        string userProfile = Environment.GetEnvironmentVariable("USERPROFILE");
+                        string downloadsPath = Path.Combine(userProfile, "Downloads");
+                        if (response.Content.Headers.ContentType.ToString() == "application/zip")
+                        {
+                            SaveFileFromHttpResponse(response, response.Content.Headers.ContentDisposition, Path.Combine(downloadsPath, "file.zip"));
+                        }
+                        if (response.Content.Headers.ContentType.ToString() == "application/pdf")
+                        {
+                            SaveFileFromHttpResponse(response, response.Content.Headers.ContentDisposition, Path.Combine(downloadsPath, "file.pdf"));
+                        }
+                        if (response.Content.Headers.ContentType.ToString() == "application/xml")
+                        {
+                            SaveFileFromHttpResponse(response, response.Content.Headers.ContentDisposition, Path.Combine(downloadsPath, "file.xml"));
+                        }
+                    }
+
+                    if (response.Content.Headers.ContentType.ToString() == "application/xml")
+                    {
                         //XDocument xmlDoc = XDocument.Parse(responseBody);
                         //XNamespace sapi = "http://www.ilcd-network.org/ILCD/ServiceAPI";
                         //XNamespace f = "http://www.ilcd-network.org/ILCD/ServiceAPI/Flow";
@@ -112,10 +214,53 @@ namespace EcoPlatformApiExample
                         //    Console.WriteLine($"{i}: RefObjectId: {factor.RefObjectId}, ShortDescription: {factor.ShortDescription}, MeanValue: {factor.MeanValue}");
                         //}
 
-                        //Console.WriteLine();
+                        XDocument doc = XDocument.Parse(responseBody);
+                        XNamespace nsDefault = "http://lca.jrc.it/ILCD/Process";
+                        XNamespace nsCommon = "http://lca.jrc.it/ILCD/Common";
+                        XNamespace nsEPD = "http://www.iai.kit.edu/EPD/2013";
+                        var lciaResults = doc.Descendants(nsDefault + "LCIAResults").Elements();
+                        var gwps = new string[]
+                        {
+                            "Global Warming Potential - fossil fuels (GWP-fossil)",
+                            "Global Warming Potential - biogenic (GWP-biogenic)",
+                            "Global Warming Potential - land use and land use change (GWP-luluc)",
+                            "Global Warming Potential - total (GWP-total)"
+                        };
+                        foreach (var g in gwps)
+                        {
+                            XElement? resultGWP = null;
+                            foreach (var lcia in lciaResults)
+                            {
+                                var name = lcia.Element(nsDefault + "referenceToLCIAMethodDataSet")?
+                                    .Element(nsCommon + "shortDescription")?.Value;
+                                if (name != null && name == g)
+                                {
+                                    resultGWP = lcia;
+                                }
+                            }
+                            var other = resultGWP?.Element(nsCommon + "other");
+                            var amounts = other.Elements().Where(a => a.Name.LocalName == "amount");
+                            var unit = other.Element(nsEPD + "referenceToUnitGroupDataSet")?.Element(nsCommon + "shortDescription")?.Value ?? "N/A";
+                            if (resultGWP != null)
+                            {
+                                string s = resultGWP.Element(nsDefault + "referenceToLCIAMethodDataSet")?.Element(nsCommon + "shortDescription")?.Value;
+                                Console.WriteLine($"Description: {s}");
+                                foreach (var a in amounts)
+                                {
+                                    var module = a.Attribute(nsEPD + "module")?.Value;
+                                    var value = a.Value;// double.Parse(a.Value, CultureInfo.InvariantCulture);
+                                    Console.WriteLine($"Module: {module}, Value: {value}");
+                                }
+                                Console.WriteLine($"Unit: {unit}");
+                            }
+                            Console.WriteLine();
+                        }
+
+                        Console.WriteLine();
                     }
 
-                    Console.WriteLine(responseBody);
+                    
+                    //Console.WriteLine(responseBody);
                 }
                 catch (HttpRequestException e)
                 {
@@ -125,7 +270,7 @@ namespace EcoPlatformApiExample
             }
         }
 
-        static void SaveZipFileFromHttpResponse(HttpResponseMessage response, ContentDispositionHeaderValue contentDisposition, string filePath)
+        static void SaveFileFromHttpResponse(HttpResponseMessage response, ContentDispositionHeaderValue contentDisposition, string filePath)
         {
             if (response == null || !response.IsSuccessStatusCode || response.Content == null)
             {
@@ -133,47 +278,6 @@ namespace EcoPlatformApiExample
             }
 
             if (contentDisposition == null || !contentDisposition.DispositionType.Equals("attachment", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new Exception("Content disposition is not for an attachment");
-            }
-
-            using (Stream contentStream = response.Content.ReadAsStream())
-            {
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    contentStream.CopyTo(fileStream);
-                }
-            }
-        }
-        static void SavePdfFileFromHttpResponse(HttpResponseMessage response, ContentDispositionHeaderValue contentDisposition, string filePath)
-        {
-            if (response == null || !response.IsSuccessStatusCode || response.Content == null)
-            {
-                throw new Exception("Invalid or unsuccessful HTTP response");
-            }
-
-            if (contentDisposition == null || !contentDisposition.DispositionType.Equals("attachment", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new Exception("Content disposition is not for an attachment");
-            }
-
-            using (Stream contentStream = response.Content.ReadAsStream())
-            {
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    contentStream.CopyTo(fileStream);
-                }
-            }
-        }
-        static void SaveXmlFileFromHttpResponse(HttpResponseMessage response, ContentDispositionHeaderValue contentDisposition, string filePath)
-        {
-            if (response == null || !response.IsSuccessStatusCode || response.Content == null)
-            {
-                throw new Exception("Invalid or unsuccessful HTTP response");
-            }
-
-            // Optionally check for attachment disposition
-            if (contentDisposition != null && !contentDisposition.DispositionType.Equals("attachment", StringComparison.OrdinalIgnoreCase))
             {
                 throw new Exception("Content disposition is not for an attachment");
             }
