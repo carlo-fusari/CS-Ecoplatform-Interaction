@@ -1,0 +1,29 @@
+C:\Users\Carlo\source\repos\EcoplatformInteraction\bin\Debug\net8.0\EcoplatformInteraction.exe
+C:\Users\Carlo\source\repos\EcoplatformInteraction\bin\Debug\net8.0\EcoplatformInteraction.deps.json
+C:\Users\Carlo\source\repos\EcoplatformInteraction\bin\Debug\net8.0\EcoplatformInteraction.runtimeconfig.json
+C:\Users\Carlo\source\repos\EcoplatformInteraction\bin\Debug\net8.0\EcoplatformInteraction.dll
+C:\Users\Carlo\source\repos\EcoplatformInteraction\bin\Debug\net8.0\EcoplatformInteraction.pdb
+C:\Users\Carlo\source\repos\EcoplatformInteraction\obj\Debug\net8.0\EcoplatformInteraction.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Carlo\source\repos\EcoplatformInteraction\obj\Debug\net8.0\EcoplatformInteraction.AssemblyInfoInputs.cache
+C:\Users\Carlo\source\repos\EcoplatformInteraction\obj\Debug\net8.0\EcoplatformInteraction.AssemblyInfo.cs
+C:\Users\Carlo\source\repos\EcoplatformInteraction\obj\Debug\net8.0\EcoplatformInteraction.csproj.CoreCompileInputs.cache
+C:\Users\Carlo\source\repos\EcoplatformInteraction\obj\Debug\net8.0\EcoplatformInteraction.dll
+C:\Users\Carlo\source\repos\EcoplatformInteraction\obj\Debug\net8.0\refint\EcoplatformInteraction.dll
+C:\Users\Carlo\source\repos\EcoplatformInteraction\obj\Debug\net8.0\EcoplatformInteraction.pdb
+C:\Users\Carlo\source\repos\EcoplatformInteraction\obj\Debug\net8.0\EcoplatformInteraction.genruntimeconfig.cache
+C:\Users\Carlo\source\repos\EcoplatformInteraction\obj\Debug\net8.0\ref\EcoplatformInteraction.dll
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\bin\Debug\net8.0\EcoplatformInteraction.exe
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\bin\Debug\net8.0\EcoplatformInteraction.deps.json
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\bin\Debug\net8.0\EcoplatformInteraction.runtimeconfig.json
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\bin\Debug\net8.0\EcoplatformInteraction.dll
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\bin\Debug\net8.0\EcoplatformInteraction.pdb
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\obj\Debug\net8.0\EcoplatformInteraction.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\obj\Debug\net8.0\EcoplatformInteraction.AssemblyInfoInputs.cache
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\obj\Debug\net8.0\EcoplatformInteraction.AssemblyInfo.cs
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\obj\Debug\net8.0\EcoplatformInteraction.csproj.CoreCompileInputs.cache
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\obj\Debug\net8.0\EcoplatformInteraction.sourcelink.json
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\obj\Debug\net8.0\EcoplatformInteraction.dll
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\obj\Debug\net8.0\refint\EcoplatformInteraction.dll
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\obj\Debug\net8.0\EcoplatformInteraction.pdb
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\obj\Debug\net8.0\EcoplatformInteraction.genruntimeconfig.cache
+C:\Users\Carlo\OneDrive - Eckersley O'Callaghan\Documents\0_Private\repos\CS-Ecoplatform-Interaction\obj\Debug\net8.0\ref\EcoplatformInteraction.dll
